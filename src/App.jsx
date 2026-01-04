@@ -35,9 +35,9 @@ const PlanningJanvier = () => {
       schedule: {
         'Kalène': { 'Lun 6': 'BI', 'Mar 7': 'OFF', 'Mer 8': 'BI', 'Jeu 9': 'BI', 'Ven 10': 'BI', 'Sam 11': 'OFF' },
         'Péo': { 'Lun 6': 'OFF', 'Mar 7': 'BI', 'Mer 8': 'Polyvalence', 'Jeu 9': 'OFF', 'Ven 10': 'Polyvalence', 'Sam 11': 'BI' },
-        'Delphine': { 'Lun 6': 'Zone Service', 'Mar 7': 'OFF', 'Mer 8': 'OFF', 'Jeu 9': 'Zone Service', 'Ven 10': 'Zone Service', 'Sam 11': 'Zone Service' },
-        'Aurore': { 'Lun 6': 'Rayon', 'Mar 7': 'Zone Service', 'Mer 8': 'Zone Service', 'Jeu 9': 'Rayon', 'Ven 10': 'OFF', 'Sam 11': 'OFF' },
-        'Patricia': { 'Lun 6': 'OFF', 'Mar 7': 'Rayon', 'Mer 8': 'OFF', 'Jeu 9': 'Caisse', 'Ven 10': 'Caisse', 'Sam 11': 'Rayon' },
+        'Delphine': { 'Lun 6': 'OFF', 'Mar 7': 'Zone Service', 'Mer 8': 'Zone Service', 'Jeu 9': 'Zone Service', 'Ven 10': 'OFF', 'Sam 11': 'Zone Service' },
+        'Aurore': { 'Lun 6': 'Zone Service', 'Mar 7': 'Rayon', 'Mer 8': 'OFF', 'Jeu 9': 'Rayon', 'Ven 10': 'Zone Service', 'Sam 11': 'OFF' },
+        'Patricia': { 'Lun 6': 'Rayon', 'Mar 7': 'OFF', 'Mer 8': 'OFF', 'Jeu 9': 'Caisse', 'Ven 10': 'Caisse', 'Sam 11': 'Rayon' },
         'Marie': { 'Lun 6': 'Caisse', 'Mar 7': 'Caisse', 'Mer 8': 'Caisse', 'Jeu 9': 'OFF', 'Ven 10': 'OFF', 'Sam 11': 'Caisse' }
       }
     },
@@ -58,7 +58,7 @@ const PlanningJanvier = () => {
         'Delphine': { 'Lun 20': 'Zone Service', 'Mar 21': 'OFF', 'Mer 22': 'OFF', 'Jeu 23': 'Zone Service', 'Ven 24': 'Zone Service', 'Sam 25': 'Zone Service' },
         'Aurore': { 'Lun 20': 'OFF', 'Mar 21': 'Zone Service', 'Mer 22': 'Zone Service', 'Jeu 23': 'Rayon', 'Ven 24': 'OFF', 'Sam 25': 'Rayon' },
         'Patricia': { 'Lun 20': 'Caisse', 'Mar 21': 'Rayon', 'Mer 22': 'Rayon', 'Jeu 23': 'OFF', 'Ven 24': 'OFF', 'Sam 25': 'Caisse' },
-        'Marie': { 'Lun 20': 'OFF', 'Mar 21': 'Caisse', 'Mer 22': 'Caisse', 'Jeu 23': 'Caisse', 'Ven 24': 'Caise', 'Sam 25': 'OFF' }
+        'Marie': { 'Lun 20': 'OFF', 'Mar 21': 'Caisse', 'Mer 22': 'Caisse', 'Jeu 23': 'Caisse', 'Ven 24': 'Caisse', 'Sam 25': 'OFF' }
       }
     },
     4: {
