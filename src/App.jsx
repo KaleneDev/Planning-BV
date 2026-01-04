@@ -33,42 +33,42 @@ const PlanningJanvier = () => {
   const initialPlanning = {
     1: {
       schedule: {
-        'Kalène': { 'Lun 6': 'BI', 'Mar 7': 'BI', 'Mer 8': 'BI', 'Jeu 9': 'BI', 'Ven 10': 'OFF', 'Sam 11': 'OFF' },
-        'Péo': { 'Lun 6': 'Polyvalence', 'Mar 7': 'Polyvalence', 'Mer 8': 'OFF', 'Jeu 9': 'OFF', 'Ven 10': 'BI', 'Sam 11': 'BI' },
+        'Kalène': { 'Lun 6': 'BI', 'Mar 7': 'OFF', 'Mer 8': 'BI', 'Jeu 9': 'BI', 'Ven 10': 'BI', 'Sam 11': 'OFF' },
+        'Péo': { 'Lun 6': 'OFF', 'Mar 7': 'BI', 'Mer 8': 'Polyvalence', 'Jeu 9': 'OFF', 'Ven 10': 'Polyvalence', 'Sam 11': 'BI' },
         'Delphine': { 'Lun 6': 'Zone Service', 'Mar 7': 'OFF', 'Mer 8': 'OFF', 'Jeu 9': 'Zone Service', 'Ven 10': 'Zone Service', 'Sam 11': 'Zone Service' },
         'Aurore': { 'Lun 6': 'Rayon', 'Mar 7': 'Zone Service', 'Mer 8': 'Zone Service', 'Jeu 9': 'Rayon', 'Ven 10': 'OFF', 'Sam 11': 'OFF' },
-        'Patricia': { 'Lun 6': 'OFF', 'Mar 7': 'OFF', 'Mer 8': 'Caisse', 'Jeu 9': 'Caisse', 'Ven 10': 'Rayon', 'Sam 11': 'Rayon' },
-        'Marie': { 'Lun 6': 'Caisse', 'Mar 7': 'Caisse', 'Mer 8': 'Rayon', 'Jeu 9': 'Zone Service', 'Ven 10': 'OFF', 'Sam 11': 'OFF' }
+        'Patricia': { 'Lun 6': 'OFF', 'Mar 7': 'Rayon', 'Mer 8': 'OFF', 'Jeu 9': 'Caisse', 'Ven 10': 'Caisse', 'Sam 11': 'Rayon' },
+        'Marie': { 'Lun 6': 'Caisse', 'Mar 7': 'Caisse', 'Mer 8': 'Caisse', 'Jeu 9': 'OFF', 'Ven 10': 'OFF', 'Sam 11': 'Caisse' }
       }
     },
     2: {
       schedule: {
-        'Kalène': { 'Lun 13': 'OFF', 'Mar 14': 'OFF', 'Mer 15': 'BI', 'Jeu 16': 'BI', 'Ven 17': 'BI', 'Sam 18': 'BI' },
-        'Péo': { 'Lun 13': 'BI', 'Mar 14': 'BI', 'Mer 15': 'Polyvalence', 'Jeu 16': 'Polyvalence', 'Ven 17': 'OFF', 'Sam 18': 'OFF' },
-        'Delphine': { 'Lun 13': 'Zone Service', 'Mar 14': 'Zone Service', 'Mer 15': 'Zone Service', 'Jeu 16': 'Zone Service', 'Ven 17': 'OFF', 'Sam 18': 'OFF' },
-        'Aurore': { 'Lun 13': 'Rayon', 'Mar 14': 'Rayon', 'Mer 15': 'OFF', 'Jeu 16': 'OFF', 'Ven 17': 'Zone Service', 'Sam 18': 'Zone Service' },
-        'Patricia': { 'Lun 13': 'Caisse', 'Mar 14': 'Rayon', 'Mer 15': 'Caisse', 'Jeu 16': 'Rayon', 'Ven 17': 'OFF', 'Sam 18': 'OFF' },
-        'Marie': { 'Lun 13': 'Rayon', 'Mar 14': 'OFF', 'Mer 15': 'OFF', 'Jeu 16': 'Caisse', 'Ven 17': 'Caisse', 'Sam 18': 'Caisse' }
+        'Kalène': { 'Lun 13': 'BI', 'Mar 14': 'OFF', 'Mer 15': 'OFF', 'Jeu 16': 'BI', 'Ven 17': 'BI', 'Sam 18': 'BI' },
+        'Péo': { 'Lun 13': 'OFF', 'Mar 14': 'BI', 'Mer 15': 'BI', 'Jeu 16': 'OFF', 'Ven 17': 'Polyvalence', 'Sam 18': 'Polyvalence' },
+        'Delphine': { 'Lun 13': 'Zone Service', 'Mar 14': 'Zone Service', 'Mer 15': 'Zone Service', 'Jeu 16': 'OFF', 'Ven 17': 'Zone Service', 'Sam 18': 'OFF' },
+        'Aurore': { 'Lun 13': 'Rayon', 'Mar 14': 'Rayon', 'Mer 15': 'OFF', 'Jeu 16': 'Zone Service', 'Ven 17': 'OFF', 'Sam 18': 'Zone Service' },
+        'Patricia': { 'Lun 13': 'Caisse', 'Mar 14': 'Caisse', 'Mer 15': 'Rayon', 'Jeu 16': 'Rayon', 'Ven 17': 'OFF', 'Sam 18': 'OFF' },
+        'Marie': { 'Lun 13': 'OFF', 'Mar 14': 'OFF', 'Mer 15': 'Caisse', 'Jeu 16': 'Caisse', 'Ven 17': 'Caisse', 'Sam 18': 'Caisse' }
       }
     },
     3: {
       schedule: {
-        'Kalène': { 'Lun 20': 'BI', 'Mar 21': 'BI', 'Mer 22': 'BI', 'Jeu 23': 'BI', 'Ven 24': 'OFF', 'Sam 25': 'OFF' },
-        'Péo': { 'Lun 20': 'Polyvalence', 'Mar 21': 'Polyvalence', 'Mer 22': 'OFF', 'Jeu 23': 'OFF', 'Ven 24': 'BI', 'Sam 25': 'BI' },
-        'Delphine': { 'Lun 20': 'OFF', 'Mar 21': 'OFF', 'Mer 22': 'Zone Service', 'Jeu 23': 'Zone Service', 'Ven 24': 'Zone Service', 'Sam 25': 'Zone Service' },
-        'Aurore': { 'Lun 20': 'Zone Service', 'Mar 21': 'Zone Service', 'Mer 22': 'Rayon', 'Jeu 23': 'Rayon', 'Ven 24': 'OFF', 'Sam 25': 'OFF' },
-        'Patricia': { 'Lun 20': 'Caisse', 'Mar 21': 'Rayon', 'Mer 22': 'OFF', 'Jeu 23': 'OFF', 'Ven 24': 'Rayon', 'Sam 25': 'Rayon' },
-        'Marie': { 'Lun 20': 'Rayon', 'Mar 21': 'Caisse', 'Mer 22': 'Caisse', 'Jeu 23': 'Caisse', 'Ven 24': 'OFF', 'Sam 25': 'OFF' }
+        'Kalène': { 'Lun 20': 'BI', 'Mar 21': 'OFF', 'Mer 22': 'OFF', 'Jeu 23': 'BI', 'Ven 24': 'BI', 'Sam 25': 'BI' },
+        'Péo': { 'Lun 20': 'Polyvalence', 'Mar 21': 'BI', 'Mer 22': 'BI', 'Jeu 23': 'OFF', 'Ven 24': 'Polyvalence', 'Sam 25': 'OFF' },
+        'Delphine': { 'Lun 20': 'Zone Service', 'Mar 21': 'OFF', 'Mer 22': 'OFF', 'Jeu 23': 'Zone Service', 'Ven 24': 'Zone Service', 'Sam 25': 'Zone Service' },
+        'Aurore': { 'Lun 20': 'OFF', 'Mar 21': 'Zone Service', 'Mer 22': 'Zone Service', 'Jeu 23': 'Rayon', 'Ven 24': 'OFF', 'Sam 25': 'Rayon' },
+        'Patricia': { 'Lun 20': 'Caisse', 'Mar 21': 'Rayon', 'Mer 22': 'Rayon', 'Jeu 23': 'OFF', 'Ven 24': 'OFF', 'Sam 25': 'Caisse' },
+        'Marie': { 'Lun 20': 'OFF', 'Mar 21': 'Caisse', 'Mer 22': 'Caisse', 'Jeu 23': 'Caisse', 'Ven 24': 'Caise', 'Sam 25': 'OFF' }
       }
     },
     4: {
       schedule: {
-        'Kalène': { 'Lun 27': 'OFF', 'Mar 28': 'OFF', 'Mer 29': 'BI', 'Jeu 30': 'BI', 'Ven 31': 'BI', 'Sam 1': 'BI' },
-        'Péo': { 'Lun 27': 'BI', 'Mar 28': 'Polyvalence', 'Mer 29': 'Polyvalence', 'Jeu 30': 'Polyvalence', 'Ven 31': 'OFF', 'Sam 1': 'OFF' },
-        'Delphine': { 'Lun 27': 'Zone Service', 'Mar 28': 'Zone Service', 'Mer 29': 'Zone Service', 'Jeu 30': 'OFF', 'Ven 31': 'OFF', 'Sam 1': 'OFF' },
-        'Aurore': { 'Lun 27': 'Rayon', 'Mar 28': 'OFF', 'Mer 29': 'OFF', 'Jeu 30': 'OFF', 'Ven 31': 'Zone Service', 'Sam 1': 'Zone Service' },
-        'Patricia': { 'Lun 27': 'OFF', 'Mar 28': 'OFF', 'Mer 29': 'OFF', 'Jeu 30': 'Caisse', 'Ven 31': 'Rayon', 'Sam 1': 'Rayon' },
-        'Marie': { 'Lun 27': 'Caisse', 'Mar 28': 'Caisse', 'Mer 29': 'Caisse', 'Jeu 30': 'Rayon', 'Ven 31': 'Caisse', 'Sam 1': 'OFF' }
+        'Kalène': { 'Lun 27': 'BI', 'Mar 28': 'BI', 'Mer 29': 'OFF', 'Jeu 30': 'BI', 'Ven 31': 'BI', 'Sam 1': 'OFF' },
+        'Péo': { 'Lun 27': 'OFF', 'Mar 28': 'Polyvalence', 'Mer 29': 'BI', 'Jeu 30': 'OFF', 'Ven 31': 'Polyvalence', 'Sam 1': 'BI' },
+        'Delphine': { 'Lun 27': 'Zone Service', 'Mar 28': 'OFF', 'Mer 29': 'OFF', 'Jeu 30': 'Zone Service', 'Ven 31': 'Zone Service', 'Sam 1': 'Zone Service' },
+        'Aurore': { 'Lun 27': 'Rayon', 'Mar 28': 'Zone Service', 'Mer 29': 'Zone Service', 'Jeu 30': 'Rayon', 'Ven 31': 'OFF', 'Sam 1': 'OFF' },
+        'Patricia': { 'Lun 27': 'OFF', 'Mar 28': 'OFF', 'Mer 29': 'Rayon', 'Jeu 30': 'Caisse', 'Ven 31': 'Caisse', 'Sam 1': 'Rayon' },
+        'Marie': { 'Lun 27': 'Caisse', 'Mar 28': 'Caisse', 'Mer 29': 'Caisse', 'Jeu 30': 'OFF', 'Ven 31': 'OFF', 'Sam 1': 'Caisse' }
       }
     }
   };
