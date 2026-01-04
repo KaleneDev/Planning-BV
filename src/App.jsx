@@ -1,21 +1,24 @@
-import React, { useState } from 'react';
-import { Calendar, Users, Clock, CheckCircle2, RotateCcw, ChevronDown } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Calendar, Users, Clock, CheckCircle2, RotateCcw, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const PlanningJanvier = () => {
   const [selectedWeek, setSelectedWeek] = useState(1);
   const [editMode, setEditMode] = useState(false);
   const [showDateModal, setShowDateModal] = useState(false);
-  const [month, setMonth] = useState('Janvier');
-  const [year, setYear] = useState(2025);
+  const [calendarMonth, setCalendarMonth] = useState(0);
+  const [calendarYear, setCalendarYear] = useState(2025);
+  const [firstMondayDate, setFirstMondayDate] = useState(new Date(2025, 0, 6));
+  
   const [weekDates, setWeekDates] = useState({
-    1: { startDate: '6', startDay: 'Lun', endDate: '11', endDay: 'Sam' },
-    2: { startDate: '13', startDay: 'Lun', endDate: '18', endDay: 'Sam' },
-    3: { startDate: '20', startDay: 'Lun', endDate: '25', endDay: 'Sam' },
-    4: { startDate: '27', startDay: 'Lun', endDate: '1', endDay: 'Sam' }
+    1: { start: new Date(2025, 0, 6), end: new Date(2025, 0, 11) },
+    2: { start: new Date(2025, 0, 13), end: new Date(2025, 0, 18) },
+    3: { start: new Date(2025, 0, 20), end: new Date(2025, 0, 25) },
+    4: { start: new Date(2025, 0, 27), end: new Date(2025, 1, 1) }
   });
-  const [tempWeekDates, setTempWeekDates] = useState(weekDates);
 
-  // Données du planning
+  const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+  const daysOfWeek = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+
   const employees = [
     { name: 'Kalène', role: 'BI uniquement', color: 'bg-blue-100 border-blue-300' },
     { name: 'Péo', role: 'Responsable - BI + Polyvalence', color: 'bg-purple-100 border-purple-300' },
@@ -33,7 +36,7 @@ const PlanningJanvier = () => {
         'Kalène': { 'Lun 6': 'BI', 'Mar 7': 'BI', 'Mer 8': 'BI', 'Jeu 9': 'BI', 'Ven 10': 'OFF', 'Sam 11': 'OFF' },
         'Péo': { 'Lun 6': 'Polyvalence', 'Mar 7': 'Polyvalence', 'Mer 8': 'OFF', 'Jeu 9': 'OFF', 'Ven 10': 'BI', 'Sam 11': 'BI' },
         'Delphine': { 'Lun 6': 'Zone Service', 'Mar 7': 'OFF', 'Mer 8': 'OFF', 'Jeu 9': 'Zone Service', 'Ven 10': 'Zone Service', 'Sam 11': 'Zone Service' },
-        'Aurore': { 'Lun 6': 'Rayon', 'Mar 7': 'Rayon', 'Mer 8': 'Zone Service', 'Jeu 9': 'Rayon', 'Ven 10': 'OFF', 'Sam 11': 'OFF' },
+        'Aurore': { 'Lun 6': 'Rayon', 'Mar 7': 'Zone Service', 'Mer 8': 'Zone Service', 'Jeu 9': 'Rayon', 'Ven 10': 'OFF', 'Sam 11': 'OFF' },
         'Patricia': { 'Lun 6': 'OFF', 'Mar 7': 'OFF', 'Mer 8': 'Caisse', 'Jeu 9': 'Caisse', 'Ven 10': 'Rayon', 'Sam 11': 'Rayon' },
         'Marie': { 'Lun 6': 'Caisse', 'Mar 7': 'Caisse', 'Mer 8': 'Rayon', 'Jeu 9': 'Zone Service', 'Ven 10': 'OFF', 'Sam 11': 'OFF' }
       }
@@ -72,8 +75,72 @@ const PlanningJanvier = () => {
 
   const [planning, setPlanning] = useState(initialPlanning);
 
+  const getDaysInMonth = (m, y) => new Date(y, m + 1, 0).getDate();
+  const getFirstDayOfMonth = (m, y) => (new Date(y, m, 1).getDay() - 1 + 7) % 7;
+
+  const getCalendarDays = (m, y) => {
+    const daysInMonth = getDaysInMonth(m, y);
+    const firstDay = getFirstDayOfMonth(m, y);
+    const days = [];
+
+    const prevMonthDays = getDaysInMonth(m - 1, y);
+    for (let i = firstDay - 1; i >= 0; i--) {
+      days.push({ date: prevMonthDays - i, isCurrentMonth: false, month: m - 1, year: m === 0 ? y - 1 : y });
+    }
+
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push({ date: i, isCurrentMonth: true, month: m, year: y });
+    }
+
+    const remainingDays = 42 - days.length;
+    for (let i = 1; i <= remainingDays; i++) {
+      days.push({ date: i, isCurrentMonth: false, month: m + 1, year: m === 11 ? y + 1 : y });
+    }
+
+    return days;
+  };
+
+  const formatDateRange = (start, end) => {
+    const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    const startDay = dayNames[start.getDay() === 0 ? 6 : start.getDay() - 1];
+    const endDay = dayNames[end.getDay() === 0 ? 6 : end.getDay() - 1];
+    return `${startDay} ${start.getDate()} - ${endDay} ${end.getDate()}`;
+  };
+
+  const selectMonday = (dayObj) => {
+    const startDate = new Date(dayObj.year, dayObj.month, dayObj.date);
+    
+    const newWeekDates = {};
+    for (let i = 0; i < 4; i++) {
+      const weekStart = new Date(startDate);
+      weekStart.setDate(weekStart.getDate() + i * 7);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekEnd.getDate() + 5);
+      newWeekDates[i + 1] = { start: weekStart, end: weekEnd };
+    }
+    
+    setWeekDates(newWeekDates);
+    setFirstMondayDate(startDate);
+  };
+
+  const generateTableDays = useMemo(() => {
+    const currentWeek = weekDates[selectedWeek];
+    const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    const days = [];
+    
+    for (let i = 0; i < 6; i++) {
+      const date = new Date(currentWeek.start);
+      date.setDate(date.getDate() + i);
+      const dayName = dayNames[i];
+      const dayNum = date.getDate();
+      days.push(`${dayName} ${dayNum}`);
+    }
+    
+    return days;
+  }, [selectedWeek, weekDates]);
+
   const currentWeek = planning[selectedWeek];
-  const days = Object.keys(currentWeek.schedule['Kalène']);
+  const days = generateTableDays;
 
   const handleCellChange = (employeeName, day, newValue) => {
     setPlanning(prev => ({
@@ -91,22 +158,12 @@ const PlanningJanvier = () => {
     }));
   };
 
-  const getFormattedDates = () => {
-    return `${weekDates[selectedWeek].startDay} ${weekDates[selectedWeek].startDate} - ${weekDates[selectedWeek].endDay} ${weekDates[selectedWeek].endDate}`;
-  };
-
-  const saveDates = () => {
-    setWeekDates(tempWeekDates);
-    setShowDateModal(false);
-  };
-
   const resetPlanning = () => {
     if (confirm('Voulez-vous vraiment réinitialiser le planning à sa version initiale ?')) {
       setPlanning(initialPlanning);
     }
   };
 
-  // Fonction pour vérifier les doublons de poste
   const checkDuplicates = (day) => {
     const postes = {};
     const issues = [];
@@ -130,7 +187,6 @@ const PlanningJanvier = () => {
     return issues;
   };
 
-  // Calcul des statistiques
   const calculateStats = () => {
     let saturdaysWorked = {};
     let saturdaysOff = {};
@@ -145,13 +201,11 @@ const PlanningJanvier = () => {
     });
 
     Object.entries(planning).forEach(([weekNum, week]) => {
-      Object.entries(week.schedule).forEach(([name, days]) => {
+      Object.entries(week.schedule).forEach(([name, daySchedule]) => {
         let daysThisWeek = 0;
-        Object.entries(days).forEach(([day, status]) => {
+        Object.entries(daySchedule).forEach(([day, status]) => {
           if (status !== 'OFF') {
-            if (!day.includes('Fév')) {
-              totalDaysWorked[name]++;
-            }
+            totalDaysWorked[name]++;
             daysThisWeek++;
             if (day.includes('Sam')) {
               saturdaysWorked[name]++;
@@ -169,29 +223,23 @@ const PlanningJanvier = () => {
   };
 
   const stats = calculateStats();
+  const calendarDays = getCalendarDays(calendarMonth, calendarYear);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-7xl mx-auto">
-        {/* En-tête */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div>
-                <div className="flex items-center gap-3">
-                  <Calendar className="w-8 h-8 text-indigo-600" />
-                  <button
-                    onClick={() => setShowDateModal(true)}
-                    className="flex items-center gap-2 hover:text-indigo-600 transition-colors group"
-                  >
-                    <h1 className="text-3xl font-bold text-gray-800 group-hover:text-indigo-600">
-                      Planning {month} {year}
-                    </h1>
-                    <ChevronDown className="w-6 h-6 text-gray-800 group-hover:text-indigo-600" />
-                  </button>
-                </div>
-              </div>
-            </div>
+            <button
+              onClick={() => setShowDateModal(true)}
+              className="flex items-center gap-2 hover:text-indigo-600 transition-colors group"
+            >
+              <Calendar className="w-8 h-8 text-indigo-600" />
+              <h1 className="text-3xl font-bold text-gray-800 group-hover:text-indigo-600">
+                Planning {months[firstMondayDate.getMonth()]} {firstMondayDate.getFullYear()}
+              </h1>
+              <ChevronDown className="w-6 h-6 text-gray-800 group-hover:text-indigo-600" />
+            </button>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <Clock className="w-5 h-5" />
@@ -216,100 +264,112 @@ const PlanningJanvier = () => {
               </button>
             </div>
           </div>
-          
-          {/* Modal de configuration des dates */}
+
           {showDateModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-lg shadow-2xl p-8 max-w-2xl w-full">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">Configuration du Planning</h2>
-                
-                <div className="grid grid-cols-2 gap-6 mb-6">
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Mois</label>
-                    <input
-                      type="text"
-                      value={month}
-                      onChange={(e) => setMonth(e.target.value)}
-                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Année</label>
-                    <input
-                      type="number"
-                      value={year}
-                      onChange={(e) => setYear(parseInt(e.target.value))}
-                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:outline-none"
-                    />
-                  </div>
+              <div className="bg-white rounded-lg shadow-2xl max-w-4xl w-full flex flex-col max-h-[90vh]">
+                <div className="p-8 pb-0">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-6">Configurer les semaines</h2>
                 </div>
 
-                <h3 className="text-lg font-bold text-gray-800 mb-4">Semaines</h3>
-                <div className="space-y-4 mb-6">
-                  {[1, 2, 3, 4].map(week => (
-                    <div key={week} className="border-2 border-gray-200 rounded-lg p-4">
-                      <h4 className="font-bold text-gray-800 mb-3">Semaine {week}</h4>
-                      <div className="grid grid-cols-4 gap-3">
-                        <div>
-                          <label className="block text-xs font-bold text-gray-700 mb-1">Jour début</label>
+                <div className="overflow-y-auto flex-1 px-8 py-6">
+                  <p className="text-sm text-gray-600 mb-4">Sélectionnez le lundi de la première semaine, les 3 autres semaines seront automatiquement configurées</p>
+                  
+                  <div className="bg-white rounded-lg p-6 border-2 border-indigo-300">
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-lg font-bold text-gray-800">Calendrier</h3>
+                      <div className="flex items-center gap-4">
+                        <button
+                          onClick={() => setCalendarMonth(calendarMonth === 0 ? 11 : calendarMonth - 1)}
+                          className="p-2 hover:bg-gray-200 rounded-lg"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        <div className="flex items-center gap-2">
+                          <select
+                            value={calendarMonth}
+                            onChange={(e) => setCalendarMonth(parseInt(e.target.value))}
+                            className="px-3 py-2 border-2 border-gray-300 rounded-lg font-bold"
+                          >
+                            {months.map((m, idx) => (
+                              <option key={idx} value={idx}>{m}</option>
+                            ))}
+                          </select>
                           <input
-                            type="text"
-                            value={tempWeekDates[week].startDay}
-                            onChange={(e) => setTempWeekDates({
-                              ...tempWeekDates,
-                              [week]: { ...tempWeekDates[week], startDay: e.target.value }
-                            })}
-                            placeholder="Lun"
-                            className="w-full px-3 py-2 border-2 border-gray-300 rounded text-sm focus:border-indigo-600 focus:outline-none"
+                            type="number"
+                            value={calendarYear}
+                            onChange={(e) => setCalendarYear(parseInt(e.target.value))}
+                            className="px-3 py-2 border-2 border-gray-300 rounded-lg font-bold w-20 text-center"
                           />
                         </div>
-                        <div>
-                          <label className="block text-xs font-bold text-gray-700 mb-1">Date début</label>
-                          <input
-                            type="text"
-                            value={tempWeekDates[week].startDate}
-                            onChange={(e) => setTempWeekDates({
-                              ...tempWeekDates,
-                              [week]: { ...tempWeekDates[week], startDate: e.target.value }
-                            })}
-                            placeholder="6"
-                            className="w-full px-3 py-2 border-2 border-gray-300 rounded text-sm focus:border-indigo-600 focus:outline-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-bold text-gray-700 mb-1">Jour fin</label>
-                          <input
-                            type="text"
-                            value={tempWeekDates[week].endDay}
-                            onChange={(e) => setTempWeekDates({
-                              ...tempWeekDates,
-                              [week]: { ...tempWeekDates[week], endDay: e.target.value }
-                            })}
-                            placeholder="Sam"
-                            className="w-full px-3 py-2 border-2 border-gray-300 rounded text-sm focus:border-indigo-600 focus:outline-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-bold text-gray-700 mb-1">Date fin</label>
-                          <input
-                            type="text"
-                            value={tempWeekDates[week].endDate}
-                            onChange={(e) => setTempWeekDates({
-                              ...tempWeekDates,
-                              [week]: { ...tempWeekDates[week], endDate: e.target.value }
-                            })}
-                            placeholder="11"
-                            className="w-full px-3 py-2 border-2 border-gray-300 rounded text-sm focus:border-indigo-600 focus:outline-none"
-                          />
-                        </div>
+                        <button
+                          onClick={() => {
+                            if (calendarMonth === 11) {
+                              setCalendarMonth(0);
+                              setCalendarYear(calendarYear + 1);
+                            } else {
+                              setCalendarMonth(calendarMonth + 1);
+                            }
+                          }}
+                          className="p-2 hover:bg-gray-200 rounded-lg"
+                        >
+                          <ChevronRight className="w-5 h-5" />
+                        </button>
                       </div>
                     </div>
-                  ))}
+
+                    <div className="grid grid-cols-7 gap-2 mb-6">
+                      {daysOfWeek.map(day => (
+                        <div key={day} className="text-center font-bold text-sm text-gray-600 py-2">{day}</div>
+                      ))}
+                      {calendarDays.map((dayObj, idx) => {
+                        const dayOfWeek = idx % 7;
+                        const isMonday = dayOfWeek === 0;
+                        const isFirstMonday = 
+                          dayObj.date === firstMondayDate.getDate() &&
+                          dayObj.month === firstMondayDate.getMonth() &&
+                          dayObj.year === firstMondayDate.getFullYear();
+
+                        return (
+                          <button
+                            key={idx}
+                            onClick={() => {
+                              if (isMonday && dayObj.isCurrentMonth) {
+                                selectMonday(dayObj);
+                              }
+                            }}
+                            disabled={!isMonday || !dayObj.isCurrentMonth}
+                            className={`p-3 rounded font-bold text-sm transition-all ${
+                              isFirstMonday
+                                ? 'bg-indigo-600 text-white shadow-lg'
+                                : isMonday && dayObj.isCurrentMonth
+                                ? 'bg-blue-100 text-blue-800 hover:bg-blue-200 cursor-pointer'
+                                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            } ${dayObj.isCurrentMonth ? '' : 'opacity-30'}`}
+                          >
+                            {dayObj.date}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="bg-indigo-50 p-4 rounded-lg">
+                      <h4 className="font-bold text-gray-800 mb-3">Semaines configurées :</h4>
+                      <div className="space-y-2">
+                        {[1, 2, 3, 4].map(week => (
+                          <div key={week} className="flex items-center gap-3 p-2 bg-white rounded">
+                            <span className="font-bold text-indigo-600">S{week}:</span>
+                            <span className="text-gray-700">{formatDateRange(weekDates[week].start, weekDates[week].end)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex gap-4 p-8 pt-6 border-t-2 border-gray-200">
                   <button
-                    onClick={saveDates}
+                    onClick={() => setShowDateModal(false)}
                     className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition-all"
                   >
                     Valider
@@ -318,14 +378,13 @@ const PlanningJanvier = () => {
                     onClick={() => setShowDateModal(false)}
                     className="flex-1 px-6 py-3 bg-gray-300 text-gray-700 rounded-lg font-bold hover:bg-gray-400 transition-all"
                   >
-                    Annuler
+                    Fermer
                   </button>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Sélecteur de semaine */}
           <div className="flex gap-3 flex-wrap">
             {[1, 2, 3, 4].map(week => (
               <button
@@ -339,14 +398,13 @@ const PlanningJanvier = () => {
               >
                 <div>Semaine {week}</div>
                 <div className={`text-xs mt-1 ${selectedWeek === week ? 'text-indigo-100' : 'text-gray-600'}`}>
-                  {weekDates[week].startDay} {weekDates[week].startDate} - {weekDates[week].endDay} {weekDates[week].endDate}
+                  {formatDateRange(weekDates[week].start, weekDates[week].end)}
                 </div>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Tableau du planning */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -363,7 +421,7 @@ const PlanningJanvier = () => {
               </thead>
               <tbody>
                 {employees.map((emp, idx) => {
-                  const daysThisWeek = Object.values(currentWeek.schedule[emp.name]).filter(s => s !== 'OFF').length;
+                  const daysThisWeek = days.filter(day => currentWeek.schedule[emp.name]?.[day] !== 'OFF').length;
                   return (
                     <tr key={emp.name} className={idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                       <td className="px-4 py-3 font-medium text-gray-800 border-r border-gray-200">
@@ -371,7 +429,7 @@ const PlanningJanvier = () => {
                         <div className="text-xs text-gray-600">{emp.role}</div>
                       </td>
                       {days.map(day => {
-                        const status = currentWeek.schedule[emp.name][day];
+                        const status = currentWeek.schedule[emp.name]?.[day] || 'OFF';
                         const isOff = status === 'OFF';
                         
                         if (editMode) {
@@ -416,7 +474,6 @@ const PlanningJanvier = () => {
           </div>
         </div>
 
-        {/* Vérification présences et doublons */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <h3 className="text-lg font-bold text-gray-800 mb-3">✅ Vérification : Présences et Postes (Semaine {selectedWeek})</h3>
           <div className="overflow-x-auto">
@@ -433,11 +490,11 @@ const PlanningJanvier = () => {
               </thead>
               <tbody>
                 {days.map(day => {
-                  const present = employees.filter(emp => currentWeek.schedule[emp.name][day] !== 'OFF');
+                  const present = employees.filter(emp => currentWeek.schedule[emp.name]?.[day] !== 'OFF');
                   const count = present.length;
-                  const hasBI = present.some(emp => currentWeek.schedule[emp.name][day] === 'BI');
-                  const hasZS = present.some(emp => currentWeek.schedule[emp.name][day] === 'Zone Service');
-                  const hasCaisse = present.some(emp => currentWeek.schedule[emp.name][day] === 'Caisse');
+                  const hasBI = present.some(emp => currentWeek.schedule[emp.name]?.[day] === 'BI');
+                  const hasZS = present.some(emp => currentWeek.schedule[emp.name]?.[day] === 'Zone Service');
+                  const hasCaisse = present.some(emp => currentWeek.schedule[emp.name]?.[day] === 'Caisse');
                   const duplicates = checkDuplicates(day);
                   const hasDuplicates = duplicates.length > 0;
                   
@@ -471,7 +528,6 @@ const PlanningJanvier = () => {
           </div>
         </div>
 
-        {/* Statistiques */}
         <div className="grid md:grid-cols-3 gap-6">
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex items-center gap-2 mb-4">
@@ -500,7 +556,7 @@ const PlanningJanvier = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex items-center gap-2 mb-4">
               <Users className="w-6 h-6 text-blue-600" />
-              <h2 className="text-xl font-bold text-gray-800">Total {month}</h2>
+              <h2 className="text-xl font-bold text-gray-800">Total</h2>
             </div>
             <div className="space-y-2">
               {employees.map(emp => (
@@ -526,14 +582,14 @@ const PlanningJanvier = () => {
                 <div key={emp.name} className="p-2 bg-gray-50 rounded">
                   <div className="font-medium text-sm mb-1">{emp.name}</div>
                   <div className="flex gap-1">
-                    {stats.weeklyDays[emp.name].map((days, idx) => (
+                    {stats.weeklyDays[emp.name].map((d, idx) => (
                       <span key={idx} className={`px-2 py-1 rounded text-xs font-bold flex-1 text-center ${
-                        days === 4 ? 'bg-green-100 text-green-800' : 
-                        days === 5 ? 'bg-blue-100 text-blue-800' :
-                        days === 3 ? 'bg-yellow-100 text-yellow-800' :
-                        days === 2 ? 'bg-orange-100 text-orange-800' : 'bg-gray-200 text-gray-600'
+                        d === 4 ? 'bg-green-100 text-green-800' : 
+                        d === 5 ? 'bg-blue-100 text-blue-800' :
+                        d === 3 ? 'bg-yellow-100 text-yellow-800' :
+                        d === 2 ? 'bg-orange-100 text-orange-800' : 'bg-gray-200 text-gray-600'
                       }`}>
-                        S{idx+1}: {days}j
+                        S{idx+1}: {d}j
                       </span>
                     ))}
                   </div>
@@ -543,7 +599,6 @@ const PlanningJanvier = () => {
           </div>
         </div>
 
-        {/* Légende */}
         <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
           <h3 className="text-lg font-bold text-gray-800 mb-3">Légende des postes</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
