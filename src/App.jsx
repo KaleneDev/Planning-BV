@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
-import { Calendar, Users, Clock, CheckCircle2, Save, RotateCcw } from 'lucide-react';
+import { Calendar, Users, Clock, CheckCircle2, RotateCcw, ChevronDown } from 'lucide-react';
 
 const PlanningJanvier = () => {
   const [selectedWeek, setSelectedWeek] = useState(1);
   const [editMode, setEditMode] = useState(false);
+  const [showDateModal, setShowDateModal] = useState(false);
+  const [month, setMonth] = useState('Janvier');
+  const [year, setYear] = useState(2025);
+  const [weekDates, setWeekDates] = useState({
+    1: { startDate: '6', startDay: 'Lun', endDate: '11', endDay: 'Sam' },
+    2: { startDate: '13', startDay: 'Lun', endDate: '18', endDay: 'Sam' },
+    3: { startDate: '20', startDay: 'Lun', endDate: '25', endDay: 'Sam' },
+    4: { startDate: '27', startDay: 'Lun', endDate: '1', endDay: 'Sam' }
+  });
+  const [tempWeekDates, setTempWeekDates] = useState(weekDates);
 
   // Données du planning
   const employees = [
@@ -19,7 +29,6 @@ const PlanningJanvier = () => {
 
   const initialPlanning = {
     1: {
-      dates: 'Lun 6 - Sam 11',
       schedule: {
         'Kalène': { 'Lun 6': 'BI', 'Mar 7': 'BI', 'Mer 8': 'BI', 'Jeu 9': 'BI', 'Ven 10': 'OFF', 'Sam 11': 'OFF' },
         'Péo': { 'Lun 6': 'Polyvalence', 'Mar 7': 'Polyvalence', 'Mer 8': 'OFF', 'Jeu 9': 'OFF', 'Ven 10': 'BI', 'Sam 11': 'BI' },
@@ -30,7 +39,6 @@ const PlanningJanvier = () => {
       }
     },
     2: {
-      dates: 'Lun 13 - Sam 18',
       schedule: {
         'Kalène': { 'Lun 13': 'OFF', 'Mar 14': 'OFF', 'Mer 15': 'BI', 'Jeu 16': 'BI', 'Ven 17': 'BI', 'Sam 18': 'BI' },
         'Péo': { 'Lun 13': 'BI', 'Mar 14': 'BI', 'Mer 15': 'Polyvalence', 'Jeu 16': 'Polyvalence', 'Ven 17': 'OFF', 'Sam 18': 'OFF' },
@@ -41,7 +49,6 @@ const PlanningJanvier = () => {
       }
     },
     3: {
-      dates: 'Lun 20 - Sam 25',
       schedule: {
         'Kalène': { 'Lun 20': 'BI', 'Mar 21': 'BI', 'Mer 22': 'BI', 'Jeu 23': 'BI', 'Ven 24': 'OFF', 'Sam 25': 'OFF' },
         'Péo': { 'Lun 20': 'Polyvalence', 'Mar 21': 'Polyvalence', 'Mer 22': 'OFF', 'Jeu 23': 'OFF', 'Ven 24': 'BI', 'Sam 25': 'BI' },
@@ -52,7 +59,6 @@ const PlanningJanvier = () => {
       }
     },
     4: {
-      dates: 'Lun 27 - Sam 1 Fév',
       schedule: {
         'Kalène': { 'Lun 27': 'OFF', 'Mar 28': 'OFF', 'Mer 29': 'BI', 'Jeu 30': 'BI', 'Ven 31': 'BI', 'Sam 1': 'BI' },
         'Péo': { 'Lun 27': 'BI', 'Mar 28': 'Polyvalence', 'Mer 29': 'Polyvalence', 'Jeu 30': 'Polyvalence', 'Ven 31': 'OFF', 'Sam 1': 'OFF' },
@@ -83,6 +89,15 @@ const PlanningJanvier = () => {
         }
       }
     }));
+  };
+
+  const getFormattedDates = () => {
+    return `${weekDates[selectedWeek].startDay} ${weekDates[selectedWeek].startDate} - ${weekDates[selectedWeek].endDay} ${weekDates[selectedWeek].endDate}`;
+  };
+
+  const saveDates = () => {
+    setWeekDates(tempWeekDates);
+    setShowDateModal(false);
   };
 
   const resetPlanning = () => {
@@ -160,10 +175,22 @@ const PlanningJanvier = () => {
       <div className="max-w-7xl mx-auto">
         {/* En-tête */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <Calendar className="w-8 h-8 text-indigo-600" />
-              <h1 className="text-3xl font-bold text-gray-800">Planning Janvier 2025</h1>
+              <div>
+                <div className="flex items-center gap-3">
+                  <Calendar className="w-8 h-8 text-indigo-600" />
+                  <button
+                    onClick={() => setShowDateModal(true)}
+                    className="flex items-center gap-2 hover:text-indigo-600 transition-colors group"
+                  >
+                    <h1 className="text-3xl font-bold text-gray-800 group-hover:text-indigo-600">
+                      Planning {month} {year}
+                    </h1>
+                    <ChevronDown className="w-6 h-6 text-gray-800 group-hover:text-indigo-600" />
+                  </button>
+                </div>
+              </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -190,20 +217,130 @@ const PlanningJanvier = () => {
             </div>
           </div>
           
+          {/* Modal de configuration des dates */}
+          {showDateModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-lg shadow-2xl p-8 max-w-2xl w-full">
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">Configuration du Planning</h2>
+                
+                <div className="grid grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Mois</label>
+                    <input
+                      type="text"
+                      value={month}
+                      onChange={(e) => setMonth(e.target.value)}
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Année</label>
+                    <input
+                      type="number"
+                      value={year}
+                      onChange={(e) => setYear(parseInt(e.target.value))}
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-indigo-600 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <h3 className="text-lg font-bold text-gray-800 mb-4">Semaines</h3>
+                <div className="space-y-4 mb-6">
+                  {[1, 2, 3, 4].map(week => (
+                    <div key={week} className="border-2 border-gray-200 rounded-lg p-4">
+                      <h4 className="font-bold text-gray-800 mb-3">Semaine {week}</h4>
+                      <div className="grid grid-cols-4 gap-3">
+                        <div>
+                          <label className="block text-xs font-bold text-gray-700 mb-1">Jour début</label>
+                          <input
+                            type="text"
+                            value={tempWeekDates[week].startDay}
+                            onChange={(e) => setTempWeekDates({
+                              ...tempWeekDates,
+                              [week]: { ...tempWeekDates[week], startDay: e.target.value }
+                            })}
+                            placeholder="Lun"
+                            className="w-full px-3 py-2 border-2 border-gray-300 rounded text-sm focus:border-indigo-600 focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-700 mb-1">Date début</label>
+                          <input
+                            type="text"
+                            value={tempWeekDates[week].startDate}
+                            onChange={(e) => setTempWeekDates({
+                              ...tempWeekDates,
+                              [week]: { ...tempWeekDates[week], startDate: e.target.value }
+                            })}
+                            placeholder="6"
+                            className="w-full px-3 py-2 border-2 border-gray-300 rounded text-sm focus:border-indigo-600 focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-700 mb-1">Jour fin</label>
+                          <input
+                            type="text"
+                            value={tempWeekDates[week].endDay}
+                            onChange={(e) => setTempWeekDates({
+                              ...tempWeekDates,
+                              [week]: { ...tempWeekDates[week], endDay: e.target.value }
+                            })}
+                            placeholder="Sam"
+                            className="w-full px-3 py-2 border-2 border-gray-300 rounded text-sm focus:border-indigo-600 focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-700 mb-1">Date fin</label>
+                          <input
+                            type="text"
+                            value={tempWeekDates[week].endDate}
+                            onChange={(e) => setTempWeekDates({
+                              ...tempWeekDates,
+                              [week]: { ...tempWeekDates[week], endDate: e.target.value }
+                            })}
+                            placeholder="11"
+                            className="w-full px-3 py-2 border-2 border-gray-300 rounded text-sm focus:border-indigo-600 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-4">
+                  <button
+                    onClick={saveDates}
+                    className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition-all"
+                  >
+                    Valider
+                  </button>
+                  <button
+                    onClick={() => setShowDateModal(false)}
+                    className="flex-1 px-6 py-3 bg-gray-300 text-gray-700 rounded-lg font-bold hover:bg-gray-400 transition-all"
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Sélecteur de semaine */}
-          <div className="flex gap-2 flex-wrap">
-            {Object.keys(planning).map(week => (
+          <div className="flex gap-3 flex-wrap">
+            {[1, 2, 3, 4].map(week => (
               <button
                 key={week}
-                onClick={() => setSelectedWeek(parseInt(week))}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  selectedWeek === parseInt(week)
+                onClick={() => setSelectedWeek(week)}
+                className={`px-6 py-3 rounded-lg font-bold transition-all ${
+                  selectedWeek === week
                     ? 'bg-indigo-600 text-white shadow-md'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
-                Semaine {week}
-                <div className="text-xs mt-1">{planning[week].dates}</div>
+                <div>Semaine {week}</div>
+                <div className={`text-xs mt-1 ${selectedWeek === week ? 'text-indigo-100' : 'text-gray-600'}`}>
+                  {weekDates[week].startDay} {weekDates[week].startDate} - {weekDates[week].endDay} {weekDates[week].endDate}
+                </div>
               </button>
             ))}
           </div>
@@ -236,7 +373,6 @@ const PlanningJanvier = () => {
                       {days.map(day => {
                         const status = currentWeek.schedule[emp.name][day];
                         const isOff = status === 'OFF';
-                        const isFeb = day.includes('Fév');
                         
                         if (editMode) {
                           return (
@@ -247,7 +383,6 @@ const PlanningJanvier = () => {
                                 className={`
                                   w-full px-2 py-2 rounded-lg font-medium text-sm border-2 cursor-pointer
                                   ${isOff ? 'bg-gray-200 text-gray-700 border-gray-300' : emp.color}
-                                  ${isFeb ? 'opacity-60' : ''}
                                   hover:shadow-md transition-all
                                 `}
                               >
@@ -264,7 +399,6 @@ const PlanningJanvier = () => {
                             <div className={`
                               px-3 py-2 rounded-lg font-medium text-sm
                               ${isOff ? 'bg-gray-200 text-gray-600' : emp.color + ' border-2'}
-                              ${isFeb ? 'opacity-60' : ''}
                             `}>
                               {status}
                             </div>
@@ -366,7 +500,7 @@ const PlanningJanvier = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex items-center gap-2 mb-4">
               <Users className="w-6 h-6 text-blue-600" />
-              <h2 className="text-xl font-bold text-gray-800">Total Janvier</h2>
+              <h2 className="text-xl font-bold text-gray-800">Total {month}</h2>
             </div>
             <div className="space-y-2">
               {employees.map(emp => (
